@@ -175,7 +175,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         {
             for (int j = 0; j < num_cols; j++)
             {
-                if (!board[i][j] == '-' || !board[i][j] == 'x' || !board[i][j] == 'o')
+             if (board[i][j] != '-' && board[i][j] != 'x' && board[i][j] != 'o')
                 {
                    return INVALID_SYMBOL;
                 }
