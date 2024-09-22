@@ -162,6 +162,53 @@ void play_game(int num_rows, int num_cols)
         }
     }
 }
+bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int num_cols)
+{
+    int count = 0;
+
+    // Check the left-to-right diagonal (\ direction)
+    for (int i = -3; i <= 3; i++)
+    {
+        if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols)
+        {
+            if (board[row + i][col + i] == piece)
+            {
+                count++;
+                if (count == 4)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                count = 0;
+            }
+        }
+    }
+
+    count = 0;
+    // Check the right-to-left diagonal (/ direction)
+    for (int i = -3; i <= 3; i++)
+    {
+        if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols)
+        {
+            if (board[row + i][col - i] == piece)
+            {
+                count++;
+                if (count == 4)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                count = 0;
+            }
+        }
+    }
+
+    return false;
+}
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o)
 {
     int state_length = strlen(initial_state);
