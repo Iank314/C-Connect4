@@ -10,10 +10,11 @@
 
 #define FOUND_SOLUTION 1
 #define HEURISTICS_FAILED -1
-#define INITIAL_BOARD_FOUR_IN_A_ROW -2
-#define INITIAL_BOARD_INVALID_CHARACTERS -3
-#define INITIAL_BOARD_NO_SOLUTION -4
-#define INVALID_SYMBOL -5
+#define INITIAL_BOARD_FOUR_IN_A_ROW -1
+#define INITIAL_BOARD_INVALID_CHARACTERS -1
+#define INITIAL_BOARD_NO_SOLUTION -1
+#define INVALID_SYMBOL -2
+
 
 char board[NUM_ROWS][NUM_COLS] = {0};
 
@@ -170,16 +171,18 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     initialize_board(initial_state, num_rows, num_cols);
-   for (int i = 0; i < num_rows; i++)
+
+    for (int i = 0; i < num_rows; i++)
+    {
+        for (int j = 0; j < num_cols; j++)
         {
-            for (int j = 0; j < num_cols; j++)
+            if (board[i][j] != '-' && board[i][j] != 'x' && board[i][j] != 'o')
             {
-             if (board[i][j] != '-' && board[i][j] != 'x' && board[i][j] != 'o')
-                {
-                   return INVALID_SYMBOL;
-                }
+                return INVALID_SYMBOL;
             }
         }
+    }
+
     int x_count = 0, o_count = 0;
     bool four_x_in_a_row = false;
     bool four_o_in_a_row = false;
@@ -195,10 +198,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             else if (board[i][j] == 'o')
             {
                 o_count++;
-            }
-            else if (board[i][j] != '-')
-            {
-                return INITIAL_BOARD_INVALID_CHARACTERS;
             }
         }
     }
@@ -227,16 +226,13 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         }
     }
 
-    if (four_x_in_a_row)
-    {
-        return INITIAL_BOARD_FOUR_IN_A_ROW;
-    }
-    if (four_o_in_a_row)
+    if (four_x_in_a_row || four_o_in_a_row)
     {
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
     bool changed = true;
+    bool no_solution = true;
     while (changed)
     {
         changed = false;
@@ -252,6 +248,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         board[i][j] = 'o';
                         o_count++;
                         changed = true;
+                        no_solution = false;
                     }
                     else
                     {
@@ -261,6 +258,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                             board[i][j] = 'x';
                             x_count++;
                             changed = true;
+                            no_solution = false;
                         }
                         else
                         {
@@ -291,6 +289,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     if (!empty_space_found)
     {
         return FOUND_SOLUTION;
+    }
+
+    if (no_solution)
+    {
+        return INITIAL_BOARD_NO_SOLUTION;
     }
 
     return HEURISTICS_FAILED;
