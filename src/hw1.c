@@ -254,6 +254,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     bool changed;
+    bool no_solution = true;
+
     do
     {
         changed = false;
@@ -270,6 +272,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         board[i][j] = 'o';
                         (*num_o)++;
                         changed = true;
+                        no_solution = false;
                     }
                     else
                     {
@@ -279,6 +282,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                             board[i][j] = 'x';
                             (*num_x)++;
                             changed = true;
+                            no_solution = false;
                         }
                         else
                         {
@@ -290,18 +294,30 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         }
     } while (changed);
 
+    bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
             if (board[i][j] == '-')
             {
-                return HEURISTICS_FAILED;
+                empty_space_found = true;
+                break;
             }
         }
     }
 
-    return FOUND_SOLUTION;
+    if (!empty_space_found)
+    {
+        return FOUND_SOLUTION;
+    }
+
+    if (no_solution)
+    {
+        return INITIAL_BOARD_NO_SOLUTION;
+    }
+
+    return HEURISTICS_FAILED;
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
