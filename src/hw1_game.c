@@ -9,6 +9,6 @@ int main(int argc, char **argv)
     assert(argc == 4);
     initialize_board(argv[3], (int)strtoul(argv[1], NULL, 10), (int)strtoul(argv[2], NULL, 10));
     //Write your code here
-    playGame(atoi(argv[1]), atoi(argv[2]));
+    play_game(atoi(argv[1]), atoi(argv[2]));
     return 0;
 }
