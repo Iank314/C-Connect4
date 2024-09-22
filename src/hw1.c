@@ -254,7 +254,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     bool changed;
-    bool no_solution = true;
+    bool no_solution_possible = true;
 
     do
     {
@@ -272,7 +272,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         board[i][j] = 'o';
                         (*num_o)++;
                         changed = true;
-                        no_solution = false;
+                        no_solution_possible = false;
                     }
                     else
                     {
@@ -282,7 +282,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                             board[i][j] = 'x';
                             (*num_x)++;
                             changed = true;
-                            no_solution = false;
+                            no_solution_possible = false;
                         }
                         else
                         {
@@ -312,7 +312,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return FOUND_SOLUTION;
     }
 
-    if (no_solution)
+    if (no_solution_possible)
     {
         return INITIAL_BOARD_NO_SOLUTION;
     }
