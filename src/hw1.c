@@ -171,8 +171,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     initialize_board(initial_state, num_rows, num_cols);
 
     int x_count = 0, o_count = 0;
-    bool invalid_character_found = false;
-    bool four_in_a_row_found = false;
 
     for (int i = 0; i < num_rows; i++)
     {
@@ -188,18 +186,13 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             }
             else if (board[i][j] != '-')
             {
-                invalid_character_found = true;
+                return INITIAL_BOARD_INVALID_CHARACTERS;
             }
         }
     }
 
     *num_x = x_count;
     *num_o = o_count;
-
-    if (invalid_character_found)
-    {
-        return INITIAL_BOARD_INVALID_CHARACTERS;
-    }
 
     for (int i = 0; i < num_rows; i++)
     {
