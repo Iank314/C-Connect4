@@ -260,6 +260,20 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                             changed = true;
                             no_solution = false;
                         }
+                        if (check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                        {
+                            board[i][j] = 'x';
+                            x_count++;
+                            changed = true;
+                            no_solution = false;
+                        }
+                        if (check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                        {
+                            board[i][j] = 'x';
+                            x_count++;
+                            changed = true;
+                            no_solution = false;
+                        }
                         else
                         {
                             board[i][j] = '-';
