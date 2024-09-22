@@ -160,10 +160,10 @@ void play_game(int num_rows, int num_cols)
         }
     }
 }
-int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) 
+int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o)
 {
     int state_length = strlen(initial_state);
-    if (state_length != num_rows * num_cols) 
+    if (state_length != num_rows * num_cols)
     {
         return INITIAL_BOARD_INVALID_CHARACTERS;
     }
@@ -174,16 +174,19 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     bool invalid_character_found = false;
     bool four_in_a_row_found = false;
 
-    for (int i = 0; i < num_rows; i++) 
+    for (int i = 0; i < num_rows; i++)
     {
-        for (int j = 0; j < num_cols; j++) 
+        for (int j = 0; j < num_cols; j++)
         {
-            if (board[i][j] == 'x') {
+            if (board[i][j] == 'x')
+            {
                 x_count++;
-            } else if (board[i][j] == 'o') 
+            }
+            else if (board[i][j] == 'o')
             {
                 o_count++;
-            } else if (board[i][j] != '-') 
+            }
+            else if (board[i][j] != '-')
             {
                 invalid_character_found = true;
             }
@@ -193,54 +196,52 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_x = x_count;
     *num_o = o_count;
 
-    for (int i = 0; i < num_rows; i++) 
+    if (invalid_character_found)
     {
-        for (int j = 0; j < num_cols; j++) {
-            if (board[i][j] == 'x' || board[i][j] == 'o') 
+        return INITIAL_BOARD_INVALID_CHARACTERS;
+    }
+
+    for (int i = 0; i < num_rows; i++)
+    {
+        for (int j = 0; j < num_cols; j++)
+        {
+            if (board[i][j] == 'x' || board[i][j] == 'o')
             {
-                if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols)) 
+                if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols))
                 {
-                    four_in_a_row_found = true;
+                    return INITIAL_BOARD_FOUR_IN_A_ROW;
                 }
             }
         }
     }
 
-    if (invalid_character_found) 
-    {
-        return INITIAL_BOARD_INVALID_CHARACTERS;
-    } else if (four_in_a_row_found) 
-    {
-        return INITIAL_BOARD_FOUR_IN_A_ROW;
-    }
-
     bool changed = true;
-    while (changed) 
+    while (changed)
     {
         changed = false;
-        for (int i = 0; i < num_rows; i++) 
+        for (int i = 0; i < num_rows; i++)
         {
-            for (int j = 0; j < num_cols; j++) 
+            for (int j = 0; j < num_cols; j++)
             {
                 if (board[i][j] == '-')
-                 {
+                {
                     board[i][j] = 'x';
-                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols)) 
+                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols))
                     {
                         board[i][j] = 'o';
                         o_count++;
                         changed = true;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         board[i][j] = 'o';
-                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols)) 
+                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
                             x_count++;
                             changed = true;
-                        } 
-                        else 
+                        }
+                        else
                         {
                             board[i][j] = '-';
                         }
@@ -254,11 +255,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_o = o_count;
 
     bool empty_space_found = false;
-    for (int i = 0; i < num_rows; i++) 
+    for (int i = 0; i < num_rows; i++)
     {
-        for (int j = 0; j < num_cols; j++) 
+        for (int j = 0; j < num_cols; j++)
         {
-            if (board[i][j] == '-') 
+            if (board[i][j] == '-')
             {
                 empty_space_found = true;
                 break;
@@ -266,12 +267,12 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         }
     }
 
-    if (!empty_space_found)    
+    if (!empty_space_found)
     {
-        return HEURISTICS_FAILED;
+        return FOUND_SOLUTION;
     }
 
-    return FOUND_SOLUTION;
+    return HEURISTICS_FAILED;
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols) 
 { 
