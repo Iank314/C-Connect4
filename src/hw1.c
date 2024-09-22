@@ -259,7 +259,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     do
     {
         changed = false;
-        no_solution_possible = true;  
 
         for (int i = 0; i < num_rows; i++)
         {
@@ -287,13 +286,12 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         }
                         else
                         {
-                            board[i][j] = '-';  
+                            board[i][j] = '-';
                         }
                     }
                 }
             }
         }
-
     } while (changed);
 
     bool empty_space_found = false;
