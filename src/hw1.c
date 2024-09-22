@@ -217,69 +217,44 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     initialize_board(initial_state, num_rows, num_cols);
 
-    for (int i = 0; i < num_rows; i++)
-    {
-        for (int j = 0; j < num_cols; j++)
-        {
-            if (board[i][j] != '-' && board[i][j] != 'x' && board[i][j] != 'o')
-            {
-                return INVALID_SYMBOL;
-            }
-        }
-    }
-
-    int x_count = 0, o_count = 0;
-    bool four_x_in_a_row = false;
-    bool four_o_in_a_row = false;
-
+    *num_x = 0;
+    *num_o = 0;
+    bool four_in_a_row_found = false;
+    
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
             if (board[i][j] == 'x')
             {
-                x_count++;
+                (*num_x)++;
+                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                {
+                    four_in_a_row_found = true;
+                }
             }
             else if (board[i][j] == 'o')
             {
-                o_count++;
-            }
-        }
-    }
-
-    *num_x = x_count;
-    *num_o = o_count;
-
-    for (int i = 0; i < num_rows; i++)
-    {
-        for (int j = 0; j < num_cols; j++)
-        {
-            if (board[i][j] == 'x')
-            {
-                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
-                {
-                    four_x_in_a_row = true;
-                }
-            }
-            if (board[i][j] == 'o')
-            {
+                (*num_o)++;
                 if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                 {
-                    four_o_in_a_row = true;
+                    four_in_a_row_found = true;
                 }
+            }
+            else if (board[i][j] != '-')
+            {
+                return INITIAL_BOARD_INVALID_CHARACTERS;
             }
         }
     }
 
-    if (four_x_in_a_row || four_o_in_a_row)
+    if (four_in_a_row_found)
     {
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
-    bool changed = true;
-    bool no_solution_found = true; 
-
-    while (changed)
+    bool changed;
+    do
     {
         changed = false;
 
@@ -293,9 +268,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                     if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                     {
                         board[i][j] = 'o';
-                        o_count++;
+                        (*num_o)++;
                         changed = true;
-                        no_solution_found = false; 
                     }
                     else
                     {
@@ -303,48 +277,31 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
-                            x_count++;
+                            (*num_x)++;
                             changed = true;
-                            no_solution_found = false;  
                         }
                         else
                         {
-                            board[i][j] = '-'; 
+                            board[i][j] = '-';
                         }
                     }
                 }
             }
         }
-    }
+    } while (changed);
 
-    *num_x = x_count;
-    *num_o = o_count;
-
-   
-    bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
             if (board[i][j] == '-')
             {
-                empty_space_found = true;
-                break;
+                return HEURISTICS_FAILED;
             }
         }
     }
 
-    if (!empty_space_found)
-    {
-        return FOUND_SOLUTION;  
-    }
-
-    if (no_solution_found)
-    {
-        return INITIAL_BOARD_NO_SOLUTION;  
-    }
-
-    return HEURISTICS_FAILED;  
+    return FOUND_SOLUTION;
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
