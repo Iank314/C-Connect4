@@ -10,7 +10,7 @@
 
 #define FOUND_SOLUTION 1
 #define HEURISTICS_FAILED -1
-#define INITIAL_BOARD_FOUR_IN_A_ROW -2
+#define INITIAL_BOARD_FOUR_IN_A_ROW -1
 #define INITIAL_BOARD_INVALID_CHARACTERS -3
 #define INITIAL_BOARD_NO_SOLUTION -4
 
@@ -196,7 +196,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_x = x_count;
     *num_o = o_count;
 
-    // Check for four X in a row, diagonal or column
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
