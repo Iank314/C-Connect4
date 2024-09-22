@@ -253,25 +253,26 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
-    bool made_a_move = true;
-    while (made_a_move)
+    bool changed;
+    bool no_solution_possible = true;
+
+    do
     {
-        made_a_move = false;
+        changed = false;
+
         for (int i = 0; i < num_rows; i++)
         {
             for (int j = 0; j < num_cols; j++)
             {
                 if (board[i][j] == '-')
-                { 
+                {
                     board[i][j] = 'x';
                     if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                     {
                         board[i][j] = 'o';
-                        made_a_move = true;
-                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
-                        {
-                            return INITIAL_BOARD_NO_SOLUTION;
-                        }
+                        (*num_o)++;
+                        changed = true;
+                        no_solution_possible = false;
                     }
                     else
                     {
@@ -279,11 +280,9 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
-                            made_a_move = true;
-                            if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
-                            {
-                                return INITIAL_BOARD_NO_SOLUTION;
-                            }
+                            (*num_x)++;
+                            changed = true;
+                            no_solution_possible = false;
                         }
                         else
                         {
@@ -293,7 +292,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 }
             }
         }
-    }
+    } while (changed);
 
     bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
@@ -311,6 +310,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     if (!empty_space_found)
     {
         return FOUND_SOLUTION;
+    }
+
+    if (no_solution_possible)
+    {
+        return INITIAL_BOARD_NO_SOLUTION;
     }
 
     return HEURISTICS_FAILED;
