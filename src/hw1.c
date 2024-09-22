@@ -276,45 +276,75 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
-    bool valid_move_found = false;
+    bool changed = true;
+    bool no_solution_found = true; 
 
+    while (changed)
+    {
+        changed = false;
 
+        for (int i = 0; i < num_rows; i++)
+        {
+            for (int j = 0; j < num_cols; j++)
+            {
+                if (board[i][j] == '-')
+                {
+                    board[i][j] = 'x';
+                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                    {
+                        board[i][j] = 'o';
+                        o_count++;
+                        changed = true;
+                        no_solution_found = false; 
+                    }
+                    else
+                    {
+                        board[i][j] = 'o';
+                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                        {
+                            board[i][j] = 'x';
+                            x_count++;
+                            changed = true;
+                            no_solution_found = false;  
+                        }
+                        else
+                        {
+                            board[i][j] = '-'; 
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    *num_x = x_count;
+    *num_o = o_count;
+
+   
+    bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
             if (board[i][j] == '-')
             {
-                board[i][j] = 'x';
-                if (!(check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols)))
-                {
-                    valid_move_found = true;
-                    board[i][j] = '-'; 
-                }
-                else
-                {
-                    board[i][j] = '-'; 
-                }
-                board[i][j] = 'o';
-                if (!(check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols)))
-                {
-                    valid_move_found = true;
-                    board[i][j] = '-'; 
-                }
-                else
-                {
-                    board[i][j] = '-'; 
-                }
+                empty_space_found = true;
+                break;
             }
         }
     }
 
-    if (!valid_move_found)
+    if (!empty_space_found)
     {
-        return INITIAL_BOARD_NO_SOLUTION;
+        return FOUND_SOLUTION;  
     }
 
-    return HEURISTICS_FAILED;
+    if (no_solution_found)
+    {
+        return INITIAL_BOARD_NO_SOLUTION;  
+    }
+
+    return HEURISTICS_FAILED;  
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
