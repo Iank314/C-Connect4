@@ -36,10 +36,7 @@ void print_board(int num_rows, int num_cols)
 
 bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_cols) 
 {
-   
     int count = 0;
-
-
     for (int j = 0; j < num_cols; j++) 
     {
         if (board[row][j] == piece) count++;
@@ -54,7 +51,6 @@ bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_col
         else count = 0;
         if (count == 4) return true;
     }
-
 
     count = 0;
     for (int i = -3; i <= 3; i++) 
@@ -136,7 +132,6 @@ void play_game(int num_rows, int num_cols)
             board[row][col] = '-';
         }
 
-        
         bool full = true;
         for (int i = 0; i < num_rows; i++) 
         {
@@ -167,7 +162,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     {
         for (int j = 0; j < num_cols; j++) 
         {
-            if (board[i][j] == 'x') {
+            if (board[i][j] == 'x') 
+            {
                 x_count++;
             } else if (board[i][j] == 'o') 
             {
@@ -178,7 +174,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             }
         }
     }
-    
 
     for (int i = 0; i < num_rows; i++)
      {
@@ -207,4 +202,3 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
 
     return 0;
 }
-
