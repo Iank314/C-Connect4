@@ -11,7 +11,17 @@
 char board[NUM_ROWS][NUM_COLS] = {0};
 
 
-
+void initialize_board(const char *initial_state, int num_rows, int num_cols) 
+{
+    int index = 0;
+    for (int i = 0; i < num_rows; i++) 
+    {
+        for (int j = 0; j < num_cols; j++) 
+        {
+            board[i][j] = initial_state[index++];
+        }
+    }
+}
 
 bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_cols) 
 {
