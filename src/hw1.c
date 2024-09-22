@@ -219,7 +219,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     return 1;  
-
+}
 char* generate_medium(const char *final_state, int num_rows, int num_cols) 
 { 
     (void)final_state;
