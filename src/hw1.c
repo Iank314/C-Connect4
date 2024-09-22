@@ -209,21 +209,24 @@ void play_game(int num_rows, int num_cols)
         }
     }
 }
-
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o)
 {
-    int state_length = strlen(initial_state);
-    if (state_length != num_rows * num_cols)
-    {
-        return INITIAL_BOARD_INVALID_CHARACTERS;
-    }
-
     initialize_board(initial_state, num_rows, num_cols);
+
+    for (int i = 0; i < num_rows; i++)
+    {
+        for (int j = 0; j < num_cols; j++)
+        {
+            if (board[i][j] != '-' && board[i][j] != 'x' && board[i][j] != 'o')
+            {
+                return INITIAL_BOARD_INVALID_CHARACTERS;
+            }
+        }
+    }
 
     *num_x = 0;
     *num_o = 0;
-    bool four_in_a_row_found = false;
-    
+
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
@@ -233,7 +236,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 (*num_x)++;
                 if (check_win_direction(num_rows, num_cols, i, j))
                 {
-                    four_in_a_row_found = true;
+                    return INITIAL_BOARD_FOUR_IN_A_ROW;
                 }
             }
             else if (board[i][j] == 'o')
@@ -241,28 +244,16 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 (*num_o)++;
                 if (check_win_direction(num_rows, num_cols, i, j))
                 {
-                    four_in_a_row_found = true;
+                    return INITIAL_BOARD_FOUR_IN_A_ROW;
                 }
-            }
-            else if (board[i][j] != '-')
-            {
-                return INITIAL_BOARD_INVALID_CHARACTERS;
             }
         }
     }
 
-    if (four_in_a_row_found)
+    bool made_a_move = true;
+    while (made_a_move)
     {
-        return INITIAL_BOARD_FOUR_IN_A_ROW;
-    }
-
-    bool changed;
-    bool no_solution_possible = true;
-
-    do
-    {
-        changed = false;
-
+        made_a_move = false;
         for (int i = 0; i < num_rows; i++)
         {
             for (int j = 0; j < num_cols; j++)
@@ -270,57 +261,66 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 if (board[i][j] == '-')
                 {
                     board[i][j] = 'x';
+                    (*num_x)++;
                     if (check_win_direction(num_rows, num_cols, i, j))
                     {
                         board[i][j] = 'o';
+                        (*num_x)--; 
                         (*num_o)++;
-                        changed = true;
-                        no_solution_possible = false;
+                        made_a_move = true;
+                        if (check_win_direction(num_rows, num_cols, i, j))
+                        {
+                            return INITIAL_BOARD_NO_SOLUTION;
+                        }
                     }
                     else
                     {
                         board[i][j] = 'o';
+                        (*num_x)--; 
+                        (*num_o)++;
                         if (check_win_direction(num_rows, num_cols, i, j))
                         {
                             board[i][j] = 'x';
+                            (*num_o)--; 
                             (*num_x)++;
-                            changed = true;
-                            no_solution_possible = false;
+                            made_a_move = true;
+                            if (check_win_direction(num_rows, num_cols, i, j))
+                            {
+                                return INITIAL_BOARD_NO_SOLUTION;
+                            }
                         }
                         else
                         {
+                           
                             board[i][j] = '-';
+                            (*num_o)--; 
                         }
                     }
                 }
             }
         }
-    } while (changed);
+    }
 
-    bool empty_space_found = false;
+    bool board_full = true;
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
             if (board[i][j] == '-')
             {
-                empty_space_found = true;
+                board_full = false;
                 break;
             }
         }
+        if (!board_full) break;
     }
 
-    if (!empty_space_found)
+    if (board_full)
     {
-        return FOUND_SOLUTION;
+        return FOUND_SOLUTION; 
     }
 
-    if (no_solution_possible)
-    {
-        return INITIAL_BOARD_NO_SOLUTION;
-    }
-
-    return HEURISTICS_FAILED;
+    return HEURISTICS_FAILED; 
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
