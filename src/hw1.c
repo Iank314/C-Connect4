@@ -156,13 +156,19 @@ void play_game(int num_rows, int num_cols)
     }
 }
 
+
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) 
 {
+
+    int state_length = strlen(initial_state);
+    if (state_length != num_rows * num_cols) 
+    {
+        return -2;  
+    }
 
     initialize_board(initial_state, num_rows, num_cols);
 
     int x_count = 0, o_count = 0;
-
 
     for (int i = 0; i < num_rows; i++) 
     {
@@ -186,6 +192,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_x = x_count;
     *num_o = o_count;
 
+ 
     for (int i = 0; i < num_rows; i++) 
     {
         for (int j = 0; j < num_cols; j++) 
@@ -194,12 +201,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             {
                 if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols)) 
                 {
-                    return -1;  
+                    return -1;
                 }
             }
         }
     }
-
 
     bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++) 
@@ -216,9 +222,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     if (!empty_space_found) 
     {
-        return -3;
+        return -3; 
     }
-
     return 1;
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols) 
