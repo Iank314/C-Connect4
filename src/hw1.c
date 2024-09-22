@@ -253,47 +253,40 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
-    bool changed;
     bool no_solution_possible = true;
 
-    do
+    for (int i = 0; i < num_rows; i++)
     {
-        changed = false;
-
-        for (int i = 0; i < num_rows; i++)
+        for (int j = 0; j < num_cols; j++)
         {
-            for (int j = 0; j < num_cols; j++)
+            if (board[i][j] == '-')
             {
-                if (board[i][j] == '-')
+                // Simulate placing 'x' and check for any solution
+                board[i][j] = 'x';
+                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                 {
-                    board[i][j] = 'x';
-                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
-                    {
-                        board[i][j] = 'o';
-                        (*num_o)++;
-                        changed = true;
-                        no_solution_possible = false;
-                    }
-                    else
-                    {
-                        board[i][j] = 'o';
-                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
-                        {
-                            board[i][j] = 'x';
-                            (*num_x)++;
-                            changed = true;
-                            no_solution_possible = false;
-                        }
-                        else
-                        {
-                            board[i][j] = '-';
-                        }
-                    }
+                    no_solution_possible = false;
                 }
+                board[i][j] = '-';  // Reset back to original
+
+                // Simulate placing 'o' and check for any solution
+                board[i][j] = 'o';
+                if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                {
+                    no_solution_possible = false;
+                }
+                board[i][j] = '-';  // Reset back to original
             }
         }
-    } while (changed);
+    }
 
+    // If no move leads to any four-in-a-row solution, mark it as no solution possible
+    if (no_solution_possible)
+    {
+        return INITIAL_BOARD_NO_SOLUTION;
+    }
+
+    // Check if no empty space is left and return solution found
     bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
     {
@@ -312,20 +305,38 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return FOUND_SOLUTION;
     }
 
-    if (no_solution_possible)
-    {
-        return INITIAL_BOARD_NO_SOLUTION;
-    }
-
     return HEURISTICS_FAILED;
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
-    char board_copy[NUM_ROWS][NUM_COLS];
-    char *medium_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
+    char **board_copy = (char **)malloc(num_rows * sizeof(char *));
+    if (board_copy == NULL)
+    {
+        return NULL;
+    }
 
+    for (int i = 0; i < num_rows; i++)
+    {
+        board_copy[i] = (char *)malloc(num_cols * sizeof(char));
+        if (board_copy[i] == NULL)
+        {
+            for (int k = 0; k < i; k++) 
+            {
+                free(board_copy[k]);
+            }
+            free(board_copy);
+            return NULL;
+        }
+    }
+
+    char *medium_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
     if (medium_board == NULL)
-     {
+    {
+        for (int i = 0; i < num_rows; i++) 
+        {
+            free(board_copy[i]);
+        }
+        free(board_copy);
         return NULL;
     }
 
@@ -347,7 +358,18 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
             {
                 board_copy[i][j] = '-';
 
-                char test_board[num_rows * num_cols + 1];
+                char *test_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
+                if (test_board == NULL)
+                {
+                    for (int t = 0; t < num_rows; t++) 
+                    {
+                        free(board_copy[t]);
+                    }
+                    free(board_copy);
+                    free(medium_board);
+                    return NULL;
+                }
+
                 int test_index = 0;
                 for (int x = 0; x < num_rows; x++)
                 {
@@ -363,9 +385,12 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
                 {
                     board_copy[i][j] = original_token;
                 }
+
+                free(test_board);
             }
         }
     }
+
     index = 0;
     for (int i = 0; i < num_rows; i++)
     {
@@ -375,6 +400,12 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
         }
     }
     medium_board[index] = '\0'; 
+
+    for (int i = 0; i < num_rows; i++) 
+    {
+        free(board_copy[i]);
+    }
+    free(board_copy);
 
     return medium_board;
 }
