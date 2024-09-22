@@ -14,8 +14,6 @@
 #define INITIAL_BOARD_INVALID_CHARACTERS -2
 #define INITIAL_BOARD_NO_SOLUTION -4
 
-
-
 char board[NUM_ROWS][NUM_COLS] = {0};
 
 void initialize_board(const char *initial_state, int num_rows, int num_cols) 
@@ -29,7 +27,6 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols)
         }
     }
 }
-
 
 void prompt_input(char *piece, int *row, int *col, int num_rows, int num_cols) 
 {
@@ -59,95 +56,100 @@ void prompt_input(char *piece, int *row, int *col, int num_rows, int num_cols)
         printf("Invalid choice. ");
     }
 }
-bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int num_cols)
+
+int check_win_direction(int rows, int cols, int row_pos, int col_pos)
 {
-    int count = 0;
-
-    for (int i = -3; i <= 3; i++)
+    char token = board[row_pos][col_pos];
+    if (token == '-')
     {
-        if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols)
-        {
-            if (board[row + i][col + i] == piece)
-            {
-                count++;
-                if (count == 4)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                count = 0;
-            }
-        }
+        return 0;
     }
 
-    count = 0;
-    for (int i = -3; i <= 3; i++)
+    int count = 1;
+    int temp_col = col_pos + 1;
+    while (temp_col < cols && board[row_pos][temp_col] == token)
     {
-        if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols)
-        {
-            if (board[row + i][col - i] == piece)
-            {
-                count++;
-                if (count == 4)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                count = 0;
-            }
-        }
+        count++;
+        temp_col++;
+    }
+    temp_col = col_pos - 1;
+    while (temp_col >= 0 && board[row_pos][temp_col] == token)
+    {
+        count++;
+        temp_col--;
+    }
+    if (count >= 4)
+    {
+        return 1;
     }
 
-    return false;
+    count = 1;
+    int temp_row = row_pos + 1;
+    while (temp_row < rows && board[temp_row][col_pos] == token)
+    {
+        count++;
+        temp_row++;
+    }
+    temp_row = row_pos - 1;
+    while (temp_row >= 0 && board[temp_row][col_pos] == token)
+    {
+        count++;
+        temp_row--;
+    }
+    if (count >= 4)
+    {
+        return 1;
+    }
+
+    count = 1;
+    temp_row = row_pos + 1;
+    temp_col = col_pos + 1;
+    while (temp_row < rows && temp_col < cols && board[temp_row][temp_col] == token)
+    {
+        count++;
+        temp_row++;
+        temp_col++;
+    }
+    temp_row = row_pos - 1;
+    temp_col = col_pos - 1;
+    while (temp_row >= 0 && temp_col >= 0 && board[temp_row][temp_col] == token)
+    {
+        count++;
+        temp_row--;
+        temp_col--;
+    }
+    if (count >= 4)
+    {
+        return 1;
+    }
+
+    count = 1;
+    temp_row = row_pos - 1;
+    temp_col = col_pos + 1;
+    while (temp_row >= 0 && temp_col < cols && board[temp_row][temp_col] == token)
+    {
+        count++;
+        temp_row--;
+        temp_col++;
+    }
+    temp_row = row_pos + 1;
+    temp_col = col_pos - 1;
+    while (temp_row < rows && temp_col >= 0 && board[temp_row][temp_col] == token)
+    {
+        count++;
+        temp_row++;
+        temp_col--;
+    }
+    if (count >= 4)
+    {
+        return 1;
+    }
+
+    return 0;
 }
-bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_cols) 
-{
-    int count = 0;
-    for (int j = 0; j < num_cols; j++) 
-    {
-        if (board[row][j] == piece) count++;
-        else count = 0;
-        if (count == 4) return true;
-    }
 
-    count = 0;
-    for (int i = 0; i < num_rows; i++) 
-    {
-        if (board[i][col] == piece) count++;
-        else count = 0;
-        if (count == 4) return true;
-    }
-
-    count = 0;
-    for (int i = -3; i <= 3; i++) 
-    {
-        if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols) 
-        {
-            if (board[row + i][col + i] == piece) count++;
-            else count = 0;
-            if (count == 4) return true;
-        }
-    }
-
-    count = 0;
-    for (int i = -3; i <= 3; i++) 
-    {
-        if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols) 
-        {
-            if (board[row + i][col - i] == piece) count++;
-            else count = 0;
-            if (count == 4) return true;
-        }
-    }
-
-    return false;
-}
 void play_game(int num_rows, int num_cols)
- {
+{
     char piece;
     int row, col;
 
@@ -174,7 +176,7 @@ void play_game(int num_rows, int num_cols)
 
         board[row][col] = piece;
 
-        if (check_four_in_a_row(row, col, piece, num_rows, num_cols)) 
+        if (check_win_direction(num_rows, num_cols, row, col)) 
         {
             printf("Invalid choice. You have created 4-in-a-row.\n");
             board[row][col] = '-';
@@ -207,7 +209,6 @@ void play_game(int num_rows, int num_cols)
     }
 }
 
-
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o)
 {
     int state_length = strlen(initial_state);
@@ -229,7 +230,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             if (board[i][j] == 'x')
             {
                 (*num_x)++;
-                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                if (check_win_direction(num_rows, num_cols, i, j))
                 {
                     four_in_a_row_found = true;
                 }
@@ -237,7 +238,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             else if (board[i][j] == 'o')
             {
                 (*num_o)++;
-                if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                if (check_win_direction(num_rows, num_cols, i, j))
                 {
                     four_in_a_row_found = true;
                 }
@@ -268,7 +269,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 if (board[i][j] == '-')
                 {
                     board[i][j] = 'x';
-                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                    if (check_win_direction(num_rows, num_cols, i, j))
                     {
                         board[i][j] = 'o';
                         (*num_o)++;
@@ -278,7 +279,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                     else
                     {
                         board[i][j] = 'o';
-                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                        if (check_win_direction(num_rows, num_cols, i, j))
                         {
                             board[i][j] = 'x';
                             (*num_x)++;
@@ -320,13 +321,14 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     return HEURISTICS_FAILED;
 }
+
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
     char board_copy[NUM_ROWS][NUM_COLS];
     char *medium_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
 
     if (medium_board == NULL)
-     {
+    {
         return NULL;
     }
 
