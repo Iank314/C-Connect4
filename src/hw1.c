@@ -256,14 +256,14 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         {
             if (board[i][j] == 'x')
             {
-                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols))
+                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                 {
                     four_x_in_a_row = true;
                 }
             }
             if (board[i][j] == 'o')
             {
-                if (check_four_in_a_row(i, j, 'o', num_rows, num_cols))
+                if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                 {
                     four_o_in_a_row = true;
                 }
@@ -277,7 +277,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     bool changed = true;
-    bool no_solution = true;
+    bool no_solution = true;  
+
     while (changed)
     {
         changed = false;
@@ -288,22 +289,22 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 if (board[i][j] == '-')
                 {
                     board[i][j] = 'x';
-                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols))
+                    if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                     {
                         board[i][j] = 'o';
                         o_count++;
                         changed = true;
-                        no_solution = false;
+                        no_solution = false;  
                     }
                     else
                     {
                         board[i][j] = 'o';
-                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols))
+                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
                             x_count++;
                             changed = true;
-                            no_solution = false;
+                            no_solution = false; 
                         }
                         else
                         {
@@ -338,7 +339,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     if (no_solution)
     {
-        return INITIAL_BOARD_NO_SOLUTION;
+        return INITIAL_BOARD_NO_SOLUTION;  
     }
 
     return HEURISTICS_FAILED;
