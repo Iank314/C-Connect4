@@ -166,7 +166,6 @@ bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int nu
 {
     int count = 0;
 
-    // Check the left-to-right diagonal (\ direction)
     for (int i = -3; i <= 3; i++)
     {
         if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols)
@@ -187,7 +186,6 @@ bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int nu
     }
 
     count = 0;
-    // Check the right-to-left diagonal (/ direction)
     for (int i = -3; i <= 3; i++)
     {
         if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols)
@@ -301,20 +299,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                     {
                         board[i][j] = 'o';
                         if (check_four_in_a_row(i, j, 'o', num_rows, num_cols))
-                        {
-                            board[i][j] = 'x';
-                            x_count++;
-                            changed = true;
-                            no_solution = false;
-                        }
-                        if (check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
-                        {
-                            board[i][j] = 'x';
-                            x_count++;
-                            changed = true;
-                            no_solution = false;
-                        }
-                        if (check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
                             x_count++;
