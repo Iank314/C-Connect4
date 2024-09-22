@@ -30,6 +30,80 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols)
     }
 }
 
+
+void prompt_input(char *piece, int *row, int *col, int num_rows, int num_cols) 
+{
+    while (true) 
+    {
+        printf("Choose a piece (x or o) or q to quit: ");
+        scanf(" %c", piece);
+        if (*piece == 'x' || *piece == 'o' || *piece == 'q') break;
+        printf("Invalid choice. ");
+    }
+
+    if (*piece == 'q') return;
+
+    while (true) 
+    {
+        printf("Choose a row (0-%d): ", num_rows - 1);
+        scanf("%d", row);
+        if (*row >= 0 && *row < num_rows) break;
+        printf("Invalid choice. ");
+    }
+
+    while (true) 
+    {
+        printf("Choose a column (0-%d): ", num_cols - 1);
+        scanf("%d", col);
+        if (*col >= 0 && *col < num_cols) break;
+        printf("Invalid choice. ");
+    }
+}
+bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int num_cols)
+{
+    int count = 0;
+
+    for (int i = -3; i <= 3; i++)
+    {
+        if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols)
+        {
+            if (board[row + i][col + i] == piece)
+            {
+                count++;
+                if (count == 4)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                count = 0;
+            }
+        }
+    }
+
+    count = 0;
+    for (int i = -3; i <= 3; i++)
+    {
+        if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols)
+        {
+            if (board[row + i][col - i] == piece)
+            {
+                count++;
+                if (count == 4)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                count = 0;
+            }
+        }
+    }
+
+    return false;
+}
 bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_cols) 
 {
     int count = 0;
@@ -71,35 +145,6 @@ bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_col
     }
 
     return false;
-}
-
-void prompt_input(char *piece, int *row, int *col, int num_rows, int num_cols) 
-{
-    while (true) 
-    {
-        printf("Choose a piece (x or o) or q to quit: ");
-        scanf(" %c", piece);
-        if (*piece == 'x' || *piece == 'o' || *piece == 'q') break;
-        printf("Invalid choice. ");
-    }
-
-    if (*piece == 'q') return;
-
-    while (true) 
-    {
-        printf("Choose a row (0-%d): ", num_rows - 1);
-        scanf("%d", row);
-        if (*row >= 0 && *row < num_rows) break;
-        printf("Invalid choice. ");
-    }
-
-    while (true) 
-    {
-        printf("Choose a column (0-%d): ", num_cols - 1);
-        scanf("%d", col);
-        if (*col >= 0 && *col < num_cols) break;
-        printf("Invalid choice. ");
-    }
 }
 
 void play_game(int num_rows, int num_cols)
@@ -162,51 +207,7 @@ void play_game(int num_rows, int num_cols)
         }
     }
 }
-bool check_four_in_a_diagonal(int row, int col, char piece, int num_rows, int num_cols)
-{
-    int count = 0;
 
-    for (int i = -3; i <= 3; i++)
-    {
-        if (row + i >= 0 && row + i < num_rows && col + i >= 0 && col + i < num_cols)
-        {
-            if (board[row + i][col + i] == piece)
-            {
-                count++;
-                if (count == 4)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                count = 0;
-            }
-        }
-    }
-
-    count = 0;
-    for (int i = -3; i <= 3; i++)
-    {
-        if (row + i >= 0 && row + i < num_rows && col - i >= 0 && col - i < num_cols)
-        {
-            if (board[row + i][col - i] == piece)
-            {
-                count++;
-                if (count == 4)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                count = 0;
-            }
-        }
-    }
-
-    return false;
-}
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o)
 {
     int state_length = strlen(initial_state);
@@ -253,26 +254,25 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
-    bool changed;
-    bool no_solution_possible = true;
-
-    do
+    bool made_a_move = true;
+    while (made_a_move)
     {
-        changed = false;
-
+        made_a_move = false;
         for (int i = 0; i < num_rows; i++)
         {
             for (int j = 0; j < num_cols; j++)
             {
                 if (board[i][j] == '-')
-                {
+                { 
                     board[i][j] = 'x';
                     if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
                     {
                         board[i][j] = 'o';
-                        (*num_o)++;
-                        changed = true;
-                        no_solution_possible = false;
+                        made_a_move = true;
+                        if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
+                        {
+                            return INITIAL_BOARD_NO_SOLUTION;
+                        }
                     }
                     else
                     {
@@ -280,9 +280,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         if (check_four_in_a_row(i, j, 'o', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'o', num_rows, num_cols))
                         {
                             board[i][j] = 'x';
-                            (*num_x)++;
-                            changed = true;
-                            no_solution_possible = false;
+                            made_a_move = true;
+                            if (check_four_in_a_row(i, j, 'x', num_rows, num_cols) || check_four_in_a_diagonal(i, j, 'x', num_rows, num_cols))
+                            {
+                                return INITIAL_BOARD_NO_SOLUTION;
+                            }
                         }
                         else
                         {
@@ -292,7 +294,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                 }
             }
         }
-    } while (changed);
+    }
 
     bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
@@ -310,11 +312,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     if (!empty_space_found)
     {
         return FOUND_SOLUTION;
-    }
-
-    if (no_solution_possible)
-    {
-        return INITIAL_BOARD_NO_SOLUTION;
     }
 
     return HEURISTICS_FAILED;
