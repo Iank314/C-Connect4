@@ -277,11 +277,12 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     bool changed = true;
-    bool no_solution = true;  
+    bool no_solution_found = true; 
 
     while (changed)
     {
         changed = false;
+
         for (int i = 0; i < num_rows; i++)
         {
             for (int j = 0; j < num_cols; j++)
@@ -294,7 +295,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         board[i][j] = 'o';
                         o_count++;
                         changed = true;
-                        no_solution = false;  
+                        no_solution_found = false; 
                     }
                     else
                     {
@@ -304,11 +305,11 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                             board[i][j] = 'x';
                             x_count++;
                             changed = true;
-                            no_solution = false; 
+                            no_solution_found = false;  
                         }
                         else
                         {
-                            board[i][j] = '-';
+                            board[i][j] = '-'; 
                         }
                     }
                 }
@@ -319,6 +320,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_x = x_count;
     *num_o = o_count;
 
+   
     bool empty_space_found = false;
     for (int i = 0; i < num_rows; i++)
     {
@@ -334,15 +336,15 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     if (!empty_space_found)
     {
-        return FOUND_SOLUTION;
+        return FOUND_SOLUTION;  
     }
 
-    if (no_solution)
+    if (no_solution_found)
     {
         return INITIAL_BOARD_NO_SOLUTION;  
     }
 
-    return HEURISTICS_FAILED;
+    return HEURISTICS_FAILED;  
 }
 char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
