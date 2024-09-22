@@ -160,11 +160,41 @@ void play_game(int num_rows, int num_cols)
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) 
 {   
-    (void)initial_state;
-    (void)num_rows;
-    (void)num_cols;
-    (void)num_x;
-    (void)num_o;
+    initialize_board(initial_state, num_rows, num_cols);
+    
+    int x_count = 0, o_count = 0;
+    for (int i = 0; i < num_rows; i++) 
+    {
+        for (int j = 0; j < num_cols; j++) 
+        {
+            if (board[i][j] == 'x') {
+                x_count++;
+            } else if (board[i][j] == 'o') 
+            {
+                o_count++;
+            } else if (board[i][j] != '-') 
+            {
+                return 3;  
+            }
+        }
+    }
+    
+
+    for (int i = 0; i < num_rows; i++)
+     {
+        for (int j = 0; j < num_cols; j++) 
+        {
+            if (board[i][j] == 'x' || board[i][j] == 'o') 
+            {
+                if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols)) 
+                {
+                    return 2;  
+                }
+            }
+        }
+    }
+    *num_x = x_count;
+    *num_o = o_count;
 
     return 0;
 }
