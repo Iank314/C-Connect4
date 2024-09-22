@@ -343,50 +343,52 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     return HEURISTICS_FAILED;
 }
-char* generate_medium(const char *final_state, int num_rows, int num_cols) 
+char* generate_medium(const char *final_state, int num_rows, int num_cols)
 {
-
     char board_copy[NUM_ROWS][NUM_COLS];
     char *medium_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
 
+    if (medium_board == NULL) 
+    {
+
+        return NULL;
+    }
 
     int index = 0;
-    for (int i = 0; i < num_rows; i++) 
+    for (int i = 0; i < num_rows; i++)
     {
-        for (int j = 0; j < num_cols; j++) 
+        for (int j = 0; j < num_cols; j++)
         {
             board_copy[i][j] = final_state[index++];
         }
     }
 
-
-    for (int i = 0; i < num_rows; i++) 
+    for (int i = 0; i < num_rows; i++)
     {
-        for (int j = 0; j < num_cols; j++) 
+        for (int j = 0; j < num_cols; j++)
         {
             char original_token = board_copy[i][j];
-            if (original_token == 'x' || original_token == 'o') 
+            if (original_token == 'x' || original_token == 'o')
             {
-                
+
                 board_copy[i][j] = '-';
 
-              
                 char test_board[num_rows * num_cols + 1];
                 int test_index = 0;
-                for (int x = 0; x < num_rows; x++) 
+                for (int x = 0; x < num_rows; x++)
                 {
-                    for (int y = 0; y < num_cols; y++) 
+                    for (int y = 0; y < num_cols; y++)
                     {
                         test_board[test_index++] = board_copy[x][y];
                     }
                 }
-                test_board[test_index] = '\0'; 
+                test_board[test_index] = '\0';
 
                 int num_x, num_o;
-             
-                if (solve(test_board, num_rows, num_cols, &num_x, &num_o) != FOUND_SOLUTION) 
+                
+                if (solve(test_board, num_rows, num_cols, &num_x, &num_o) != FOUND_SOLUTION)
                 {
-
+                  
                     board_copy[i][j] = original_token;
                 }
             }
@@ -394,9 +396,9 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
     }
 
     index = 0;
-    for (int i = 0; i < num_rows; i++) 
+    for (int i = 0; i < num_rows; i++)
     {
-        for (int j = 0; j < num_cols; j++) 
+        for (int j = 0; j < num_cols; j++)
         {
             medium_board[index++] = board_copy[i][j];
         }
