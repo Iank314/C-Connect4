@@ -348,9 +348,8 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
     char board_copy[NUM_ROWS][NUM_COLS];
     char *medium_board = (char*)malloc((num_rows * num_cols + 1) * sizeof(char));
 
-    if (medium_board == NULL) 
-    {
-
+    if (medium_board == NULL)
+     {
         return NULL;
     }
 
@@ -370,7 +369,6 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
             char original_token = board_copy[i][j];
             if (original_token == 'x' || original_token == 'o')
             {
-
                 board_copy[i][j] = '-';
 
                 char test_board[num_rows * num_cols + 1];
@@ -382,19 +380,16 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols)
                         test_board[test_index++] = board_copy[x][y];
                     }
                 }
-                test_board[test_index] = '\0';
+                test_board[test_index] = '\0'; 
 
                 int num_x, num_o;
-                
                 if (solve(test_board, num_rows, num_cols, &num_x, &num_o) != FOUND_SOLUTION)
                 {
-                  
                     board_copy[i][j] = original_token;
                 }
             }
         }
     }
-
     index = 0;
     for (int i = 0; i < num_rows; i++)
     {
