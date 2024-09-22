@@ -68,24 +68,6 @@ int check_win_direction(int num_rows, int num_cols, int row_pos, int col_pos)
     }
 
     int count = 1;
-    int temp_col = col_pos + 1;
-    while (temp_col < num_cols && board[row_pos][temp_col] == token)
-    {
-        count++;
-        temp_col++;
-    }
-    temp_col = col_pos - 1;
-    while (temp_col >= 0 && board[row_pos][temp_col] == token)
-    {
-        count++;
-        temp_col--;
-    }
-    if (count >= 4)
-    {
-        return 1;
-    }
-
-    count = 1;
     int temp_row = row_pos + 1;
     while (temp_row < num_rows && board[temp_row][col_pos] == token)
     {
@@ -102,10 +84,9 @@ int check_win_direction(int num_rows, int num_cols, int row_pos, int col_pos)
     {
         return 1;
     }
-
     count = 1;
     temp_row = row_pos + 1;
-    temp_col = col_pos + 1;
+    int temp_col = col_pos + 1;
     while (temp_row < num_rows && temp_col < num_cols && board[temp_row][temp_col] == token)
     {
         count++;
@@ -124,7 +105,6 @@ int check_win_direction(int num_rows, int num_cols, int row_pos, int col_pos)
     {
         return 1;
     }
-
     count = 1;
     temp_row = row_pos - 1;
     temp_col = col_pos + 1;
@@ -140,6 +120,24 @@ int check_win_direction(int num_rows, int num_cols, int row_pos, int col_pos)
     {
         count++;
         temp_row++;
+        temp_col--;
+    }
+    if (count >= 4)
+    {
+        return 1;
+    }
+
+    count = 1;
+    temp_col = col_pos + 1;
+    while (temp_col < num_cols && board[row_pos][temp_col] == token)
+    {
+        count++;
+        temp_col++;
+    }
+    temp_col = col_pos - 1;
+    while (temp_col >= 0 && board[row_pos][temp_col] == token)
+    {
+        count++;
         temp_col--;
     }
     if (count >= 4)
