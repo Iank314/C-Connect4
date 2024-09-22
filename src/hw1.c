@@ -22,18 +22,6 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols)
     }
 }
 
-void print_board(int num_rows, int num_cols) 
-{
-    for (int i = 0; i < num_rows; i++) 
-    {
-        for (int j = 0; j < num_cols; j++) 
-        {
-            printf("%c ", board[i][j]);
-        }
-        printf("\n");
-    }
-}
-
 bool check_four_in_a_row(int row, int col, char piece, int num_rows, int num_cols) 
 {
     int count = 0;
@@ -113,7 +101,15 @@ void play_game(int num_rows, int num_cols)
 
     while (true) 
     {
-        print_board(num_rows, num_cols);
+        for (int i = 0; i < num_rows; i++) 
+        {
+            for (int j = 0; j < num_cols; j++) 
+            {
+                printf("%c ", board[i][j]);
+            }
+            printf("\n");
+        }
+
         prompt_input(&piece, &row, &col, num_rows, num_cols);
 
         if (piece == 'q') break;
@@ -147,7 +143,14 @@ void play_game(int num_rows, int num_cols)
         if (full) 
         {
             printf("Congratulations, you have filled the board with no 4-in-a-rows!\n");
-            print_board(num_rows, num_cols);
+            for (int i = 0; i < num_rows; i++) 
+            {
+                for (int j = 0; j < num_cols; j++) 
+                {
+                    printf("%c ", board[i][j]);
+                }
+                printf("\n");
+            }
             break;
         }
     }
@@ -165,33 +168,54 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             if (board[i][j] == 'x') 
             {
                 x_count++;
-            } else if (board[i][j] == 'o') 
+            } 
+            else if (board[i][j] == 'o') 
             {
                 o_count++;
-            } else if (board[i][j] != '-') 
+            } 
+            else if (board[i][j] != '-') 
             {
-                return 3;  
+                return -2;
             }
         }
     }
 
-    for (int i = 0; i < num_rows; i++)
-     {
+    *num_x = x_count;
+    *num_o = o_count;
+
+    for (int i = 0; i < num_rows; i++) 
+    {
         for (int j = 0; j < num_cols; j++) 
         {
             if (board[i][j] == 'x' || board[i][j] == 'o') 
             {
                 if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols)) 
                 {
-                    return 2;  
+                    return -1;
                 }
             }
         }
     }
-    *num_x = x_count;
-    *num_o = o_count;
 
-    return 0;
+    bool empty_space_found = false;
+    for (int i = 0; i < num_rows; i++) 
+    {
+        for (int j = 0; j < num_cols; j++) 
+        {
+            if (board[i][j] == '-') 
+            {
+                empty_space_found = true;
+                break;
+            }
+        }
+    }
+    
+    if (!empty_space_found) 
+    {
+        return -3;
+    }
+
+    return 1;
 }
 
 char* generate_medium(const char *final_state, int num_rows, int num_cols) 
