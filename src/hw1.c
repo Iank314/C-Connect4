@@ -13,6 +13,8 @@
 #define INITIAL_BOARD_FOUR_IN_A_ROW -1
 #define INITIAL_BOARD_INVALID_CHARACTERS -1
 #define INITIAL_BOARD_NO_SOLUTION -1
+#define INVALID_SYMBOL -1
+
 
 char board[NUM_ROWS][NUM_COLS] = {0};
 
@@ -169,7 +171,16 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     }
 
     initialize_board(initial_state, num_rows, num_cols);
-
+   for (int i = 0; i < num_rows; i++)
+        {
+            for (int j = 0; j < num_cols; j++)
+            {
+                if (!board[i][j] == '-' || !board[i][j] == 'x' || !board[i][j] == 'o')
+                {
+                   return INVALID_SYMBOL;
+                }
+            }
+        }
     int x_count = 0, o_count = 0;
     bool four_x_in_a_row = false;
     bool four_o_in_a_row = false;
