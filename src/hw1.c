@@ -171,6 +171,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     initialize_board(initial_state, num_rows, num_cols);
 
     int x_count = 0, o_count = 0;
+    bool four_x_in_a_row = false;
+    bool four_o_in_a_row = false;
 
     for (int i = 0; i < num_rows; i++)
     {
@@ -194,18 +196,35 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     *num_x = x_count;
     *num_o = o_count;
 
+    // Check for four X in a row, diagonal or column
     for (int i = 0; i < num_rows; i++)
     {
         for (int j = 0; j < num_cols; j++)
         {
-            if (board[i][j] == 'x' || board[i][j] == 'o')
+            if (board[i][j] == 'x')
             {
-                if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols))
+                if (check_four_in_a_row(i, j, 'x', num_rows, num_cols))
                 {
-                    return INITIAL_BOARD_FOUR_IN_A_ROW;
+                    four_x_in_a_row = true;
+                }
+            }
+            if (board[i][j] == 'o')
+            {
+                if (check_four_in_a_row(i, j, 'o', num_rows, num_cols))
+                {
+                    four_o_in_a_row = true;
                 }
             }
         }
+    }
+
+    if (four_x_in_a_row)
+    {
+        return INITIAL_BOARD_FOUR_IN_A_ROW;
+    }
+    if (four_o_in_a_row)
+    {
+        return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
 
     bool changed = true;
