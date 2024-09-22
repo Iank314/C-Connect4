@@ -158,10 +158,11 @@ void play_game(int num_rows, int num_cols)
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) 
 {
-
     initialize_board(initial_state, num_rows, num_cols);
 
     int x_count = 0, o_count = 0;
+    bool has_invalid_char = false;
+    bool has_four_in_a_row = false;
 
     for (int i = 0; i < num_rows; i++) 
     {
@@ -177,16 +178,13 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             } 
             else if (board[i][j] != '-') 
             {
-                
-                return -2;
+                return -2;  
             }
         }
     }
 
-
     *num_x = x_count;
     *num_o = o_count;
-
 
     for (int i = 0; i < num_rows; i++) 
     {
@@ -196,8 +194,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             {
                 if (check_four_in_a_row(i, j, board[i][j], num_rows, num_cols)) 
                 {
-                   
-                    return -1;
+                    return -1;  
                 }
             }
         }
@@ -218,11 +215,10 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     if (!empty_space_found) 
     {
-        return -3;
+        return -3; 
     }
 
-    return 1;
-}
+    return 1;  
 
 char* generate_medium(const char *final_state, int num_rows, int num_cols) 
 { 
